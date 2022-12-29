@@ -12,8 +12,8 @@ using udemy_net_webapi.Data;
 namespace udemynetwebapi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20221228131506_UserCharacterRel")]
-    partial class UserCharacterRel
+    [Migration("20221229115707_InitialWeapon")]
+    partial class InitialWeapon
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -87,13 +87,60 @@ namespace udemynetwebapi.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("udemy_net_webapi.Models.Weapon", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CharacterId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Damage")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CharacterId")
+                        .IsUnique();
+
+                    b.ToTable("Weapons");
+                });
+
             modelBuilder.Entity("udemy_net_webapi.Models.Character", b =>
                 {
                     b.HasOne("udemy_net_webapi.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Characters")
                         .HasForeignKey("UserId");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("udemy_net_webapi.Models.Weapon", b =>
+                {
+                    b.HasOne("udemy_net_webapi.Models.Character", "Character")
+                        .WithOne("Weapon")
+                        .HasForeignKey("udemy_net_webapi.Models.Weapon", "CharacterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Character");
+                });
+
+            modelBuilder.Entity("udemy_net_webapi.Models.Character", b =>
+                {
+                    b.Navigation("Weapon");
+                });
+
+            modelBuilder.Entity("udemy_net_webapi.Models.User", b =>
+                {
+                    b.Navigation("Characters");
                 });
 #pragma warning restore 612, 618
         }

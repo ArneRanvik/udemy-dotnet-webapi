@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+
 namespace udemy_net_webapi.Controllers
 {
     [Authorize]
@@ -15,7 +17,7 @@ namespace udemy_net_webapi.Controllers
 
         public CharacterController(ICharacterService characterService)
         {
-            this._characterService = characterService;
+            _characterService = characterService;
         }
 
         [HttpGet("GetAll")]
@@ -54,6 +56,12 @@ namespace udemy_net_webapi.Controllers
                 return NotFound(response);
             
             return Ok(response);
+        }
+        
+        [HttpPost("Skill")]
+        public async Task<ActionResult<ServiceResponse<GetCharacterDTO>>> AddCharacterSkill(AddCharacterSkillDTO newCharacterSkill)
+        {
+            return Ok(await _characterService.AddCharacterSkill(newCharacterSkill));
         }
     }
 }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using udemy_net_webapi.DTOs.Skill;
+using udemy_net_webapi.DTOs.Weapon;
 
 namespace udemy_net_webapi
 {
@@ -13,6 +15,9 @@ namespace udemy_net_webapi
             CreateMap<Character,GetCharacterDTO>();
             CreateMap<AddCharacterDTO,Character>();
             CreateMap<UpdateCharacterDTO, Character>();
+            CreateMap<AddWeaponDTO, Weapon>();
+            CreateMap<Weapon, GetWeaponDTO>();
+            CreateMap<Skill, GetSkillDTO>();
         }
     }
 }
