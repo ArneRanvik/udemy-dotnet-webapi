@@ -29,7 +29,11 @@ namespace udemy_net_webapi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ServiceResponse<GetCharacterDTO>>> GetSingle(int id)
         {
-            return Ok(await _characterService.GetCharacterById(id));
+            var response = await _characterService.GetCharacterById(id);
+            if (response.Data is null)
+                return NotFound(response);
+
+            return Ok(response);
         }
 
         [HttpPost]
@@ -61,7 +65,11 @@ namespace udemy_net_webapi.Controllers
         [HttpPost("Skill")]
         public async Task<ActionResult<ServiceResponse<GetCharacterDTO>>> AddCharacterSkill(AddCharacterSkillDTO newCharacterSkill)
         {
-            return Ok(await _characterService.AddCharacterSkill(newCharacterSkill));
+            var response = await _characterService.AddCharacterSkill(newCharacterSkill);
+            if (response.Data is null)
+                return NotFound(response);
+
+            return Ok(response);
         }
     }
 }

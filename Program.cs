@@ -1,7 +1,8 @@
 global using udemy_net_webapi.Models;
-global using udemy_net_webapi.Services.CharacterService;
-global using udemy_net_webapi.Services.FightService;
-global using udemy_net_webapi.Services.WeaponService;
+global using udemy_net_webapi.Services.Character;
+global using udemy_net_webapi.Services.Fight;
+global using udemy_net_webapi.Services.Weapon;
+global using udemy_net_webapi.Services.ContextAccess;
 global using udemy_net_webapi.DTOs.Character;
 global using udemy_net_webapi.DTOs.Skill;
 global using udemy_net_webapi.DTOs.User;
@@ -47,6 +48,7 @@ builder.Services.AddScoped<ICharacterService, CharacterService>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IWeaponService, WeaponService>();
 builder.Services.AddScoped<IFightService, FightService>();
+builder.Services.AddScoped<IContextAccessor, ContextAccessor>();
 
 // Configure the JWT authentication scheme
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

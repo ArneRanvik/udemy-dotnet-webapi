@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using udemy_net_webapi.DTOs.Fight;
 
-namespace udemy_net_webapi.Services.FightService
+namespace udemy_net_webapi.Services.Fight
 {
     public interface IFightService
     {

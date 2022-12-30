@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using udemy_net_webapi.DTOs.Weapon;
-using udemy_net_webapi.Services.WeaponService;
+using udemy_net_webapi.Services.Weapon;
 
 namespace udemy_net_webapi.Controllers
 {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using udemy_net_webapi.DTOs.Weapon;
 
-namespace udemy_net_webapi.Services.WeaponService
+namespace udemy_net_webapi.Services.Weapon
 {
     public interface IWeaponService
     {
