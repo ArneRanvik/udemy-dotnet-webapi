@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 namespace udemy_net_webapi.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Player,Admin")]
     [ApiController]
     [Route("api/[controller]")]
     public class CharacterController : ControllerBase

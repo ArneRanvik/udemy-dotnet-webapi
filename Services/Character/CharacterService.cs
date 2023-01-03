@@ -24,6 +24,9 @@ namespace udemy_net_webapi.Services.Character
 
         private int GetUserId() => int.Parse(_httpContextAccessor.HttpContext!.User
             .FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        private string GetUserRole() => _httpContextAccessor.HttpContext!.User
+            .FindFirstValue(ClaimTypes.Role)!;
         
         public async Task<ServiceResponse<List<GetCharacterDTO>>> AddCharacter(AddCharacterDTO newCharacter)
         {
@@ -89,7 +92,9 @@ namespace udemy_net_webapi.Services.Character
             try
             {
                 // Get list of all characters belonging to user with ID
-                var characterList = await _contextAccess.GetUserCharacters(GetUserId());
+                var characterList = GetUserRole().Equals("Admin") ?
+                    await _contextAccess.GetAllCharacters() :
+                    await _contextAccess.GetUserCharacters(GetUserId());
                 serviceResponse.Data = characterList.Select(c => _mapper.Map<GetCharacterDTO>(c)).ToList();
             }
             catch (Exception ex)

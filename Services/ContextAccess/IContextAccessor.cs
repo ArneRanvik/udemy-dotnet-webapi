@@ -8,6 +8,7 @@ namespace udemy_net_webapi.Services.ContextAccess
     public interface IContextAccessor
     {
         Task AddCharacter(Models.Character character);
+        Task<List<Models.Character>> GetAllCharacters();
         Task<List<Models.Character>> GetUserCharacters(int userId);
         Task<User> GetUser(int id);
         Task<Models.Character> GetCharacter(int id);

@@ -127,5 +127,20 @@ namespace udemy_net_webapi.Services.ContextAccess
                 .ToListAsync();
             return characters;
         }
+
+        public async Task<List<Models.Character>> GetAllCharacters()
+        {
+            try
+            {
+                return await _context.Characters
+                    .Include(c => c.User)
+                    .Include(c => c.Weapon)
+                    .Include(c => c.Skills).ToListAsync();
+            }
+            catch (Exception)
+            {
+                throw new Exception("Not able to get list of all characters.");
+            }
+        }
     }
 }
