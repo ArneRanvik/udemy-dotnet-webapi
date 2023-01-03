@@ -27,20 +27,15 @@ namespace udemy_net_webapi.Services.Weapon
             var response = new ServiceResponse<GetCharacterDTO>();
             try
             {
-                // Check that user owns the character
-                bool ownedByUser = await _contextAccess.CharacterIsOwnedByUser(newWeapon.CharacterId, GetUserId());
-                if (!ownedByUser)
-                {
-                    response.Success = false;
-                    response.Message = "User does not own the character.";
-                    return response;
-                }
+                // Get character that weapon will be linked to
+                var character = await _contextAccess.GetUserCharacter(newWeapon.CharacterId, GetUserId());
 
                 // Define the weapon
                 var weapon = _mapper.Map<Models.Weapon>(newWeapon);
+                weapon.Character = character;
 
-                // Add weapon to the database
-                await _contextAccess.AddWeaponToCharacter(weapon);
+                // Add weapon to the database, database will be saved here
+                await _contextAccess.AddWeapon(weapon);
 
                 response.Data = _mapper.Map<GetCharacterDTO>(await _contextAccess.GetCharacter(newWeapon.CharacterId));
             }

@@ -43,18 +43,6 @@ namespace udemy_net_webapi.Services.ContextAccess
             return user;
         }
 
-        public async Task<Models.Character> GetUserCharacter(int id, int userId)
-        {
-            var character = await _context.Characters
-                .Include(c => c.User)
-                .Include(c => c.Weapon)
-                .Include(c => c.Skills)
-                .FirstOrDefaultAsync(c => (c.Id == id) && (c.User!.Id == userId));
-            if (character is null)
-                throw new Exception("User does not have this character.");
-            return character;
-        }
-
         public async Task<Models.Character> GetCharacter(int id)
         {
             var character = await _context.Characters
@@ -67,18 +55,26 @@ namespace udemy_net_webapi.Services.ContextAccess
             return character;
         }
 
-        public async Task RemoveCharacter(Models.Character character)
+        public async Task<Models.Character> GetUserCharacter(int id, int userId)
         {
-            _context.Characters.Remove(character);
-            await _context.SaveChangesAsync();
+            var character = await _context.Characters
+                .Include(c => c.User)
+                .Include(c => c.Weapon)
+                .Include(c => c.Skills)
+                .FirstOrDefaultAsync(c => (c.Id == id) && (c.User!.Id == userId));
+            if (character is null)
+                throw new Exception("Character does not exist. Or user does not own the character.");
+            return character;
         }
 
-        public async Task UpdateCharacter(Models.Character updatedCharacter)
+        public async Task RemoveCharacter(int id)
         {
-            // Get the current character entry
-            var character = await _context.Characters.FirstOrDefaultAsync(c => (c.Id == updatedCharacter.Id));
-            character = updatedCharacter;
-            await _context.SaveChangesAsync();
+            var character = await _context.Characters.FirstOrDefaultAsync(c => c.Id == id);
+            if (character is not null)
+            {
+                _context.Characters.Remove(character);
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task<Skill> GetSkill(int id)
@@ -87,14 +83,6 @@ namespace udemy_net_webapi.Services.ContextAccess
             if (skill is null)
                 throw new Exception("Skill does not exist.");
             return skill;
-        }
-
-        public async Task AddSkillToCharacterWithId(int skillId, int characterId)
-        {
-            Skill skill = await GetSkill(skillId);
-            Models.Character character = await GetCharacter(characterId);
-            character.Skills!.Add(skill);
-            await _context.SaveChangesAsync();
         }
 
         public async Task<bool> CharacterIsOwnedByUser(int characterId, int userId)
@@ -107,25 +95,37 @@ namespace udemy_net_webapi.Services.ContextAccess
             return true;
         }
 
-        public async Task AddWeaponToCharacter(Models.Weapon weapon)
+        public async Task<List<Models.Character>> GetCharactersWithIds(List<int> characterIds)
         {
-            // Get the character
-            var character = await GetCharacter(weapon.CharacterId);
-            weapon.Character = character;
+            var characters = await _context.Characters
+                .Include(c => c.Weapon)
+                .Include(c => c.Skills)
+                .Where(c => characterIds.Contains(c.Id)).ToListAsync();
+            if (characters is null)
+                characters = new List<Models.Character>();
+            
+            return characters;
+        }
 
-            // Add the weapon to the database
+        public async Task<int> SaveChanges()
+        {
+            return await _context.SaveChangesAsync();
+        }
+
+        public async Task AddWeapon(Models.Weapon weapon)
+        {
             _context.Weapons.Add(weapon);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Models.Character> DamageCharacter(int characterId, int damage)
+        public async Task<List<Models.Character>> GetHighscoreList()
         {
-            var character = await GetCharacter(characterId);
-            if (damage > 0)
-                character.HitPoints -= damage;
-            
-            await _context.SaveChangesAsync();
-            return character;
+            var characters = await _context.Characters
+                .Where(c => c.Fights > 0)
+                .OrderByDescending(c => c.Victories)
+                .ThenBy(c => c.Defeats)
+                .ToListAsync();
+            return characters;
         }
     }
 }

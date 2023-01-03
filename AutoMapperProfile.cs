@@ -18,6 +18,7 @@ namespace udemy_net_webapi
             CreateMap<AddWeaponDTO, Weapon>();
             CreateMap<Weapon, GetWeaponDTO>();
             CreateMap<Skill, GetSkillDTO>();
+            CreateMap<Character, HighscoreDTO>();
         }
     }
 }

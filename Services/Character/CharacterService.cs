@@ -57,13 +57,17 @@ namespace udemy_net_webapi.Services.Character
 
             try
             {
-                // Get specific character that belongs to user
-                var character = await _contextAccess.GetUserCharacter(id, GetUserId());
-                if (character is null)
-                    throw new Exception($"Character with Id '{id}' not found.");
+                // Check that user owns the character
+                bool isOwner = await _contextAccess.CharacterIsOwnedByUser(id, GetUserId());
+                if (!isOwner)
+                {
+                    serviceResponse.Success = false;
+                    serviceResponse.Message = "Can not delete, user does not own this character.";
+                    return serviceResponse;
+                }
 
-                // Remove character
-                await _contextAccess.RemoveCharacter(character);
+                // Remove the character
+                await _contextAccess.RemoveCharacter(id);
 
                 // Get list of all characters belonging to user with ID
                 var characterList = await _contextAccess.GetUserCharacters(GetUserId());
@@ -103,7 +107,7 @@ namespace udemy_net_webapi.Services.Character
 
             try
             {
-                // Get specific character that belongs to user
+                // Get specific character
                 var character = await _contextAccess.GetUserCharacter(id, GetUserId());
                 serviceResponse.Data = _mapper.Map<GetCharacterDTO>(character);
             }
@@ -127,8 +131,9 @@ namespace udemy_net_webapi.Services.Character
                 
                 // Update the character
                 _mapper.Map(updatedCharacter, character);
-                await _contextAccess.UpdateCharacter(character);
+                await _contextAccess.SaveChanges();
                 
+                // Return the updated character
                 serviceResponse.Data = _mapper.Map<GetCharacterDTO>(character);
             }
             catch (Exception ex)
@@ -145,17 +150,15 @@ namespace udemy_net_webapi.Services.Character
             var response = new ServiceResponse<GetCharacterDTO>();
             try
             {
-                // Check that user owns the character
-                bool ownedByUser = await _contextAccess.CharacterIsOwnedByUser(newCharacterSkill.CharacterId, GetUserId());
-                if (!ownedByUser)
-                {
-                    response.Success = false;
-                    response.Message = "User does not own the character.";
-                    return response;
-                }
+                // Get current character before update
+                var character = await _contextAccess.GetUserCharacter(newCharacterSkill.CharacterId, GetUserId());
 
-                // Add skill to the character
-                await _contextAccess.AddSkillToCharacterWithId(newCharacterSkill.SkillId, newCharacterSkill.CharacterId);
+                // Get the requested skill from Skills repository
+                var skill = await _contextAccess.GetSkill(newCharacterSkill.SkillId);
+
+                // Add skill to character and save tracked changes into context
+                character.Skills.Add(skill);
+                await _contextAccess.SaveChanges();
 
                 // Respond with character with the added skill
                 response.Data = _mapper.Map<GetCharacterDTO>(await _contextAccess.GetCharacter(newCharacterSkill.CharacterId));
